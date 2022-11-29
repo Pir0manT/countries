@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang=ru>
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+        name="viewport">
+  <meta content="ie=edge" http-equiv="X-UA-Compatible">
+  <title>Countries</title>
+</head>
+<style>
+  .page {
+    max-width: 1280px;
+    min-width: 320px;
+    width: 100%;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+  }
+
+  .header {
+    max-width: 880px;
+    min-height: 74px;
+    margin: 0 auto;
+    padding: 45px 0 0;
+    border-bottom: 1px solid rgba(0, 0, 0, .7);
+    display: flex;
+    justify-content: center;
+  }
+
+  .countries {
+    margin: 0 auto;
+    max-width: 880px;
+    padding: 51px 0 0;
+  }
+
+  .countries__grid {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 282px);
+    grid-row-gap: 20px;
+    grid-column-gap: 17px;
+  }
+
+  .country {
+    padding: 0;
+    margin: 0;
+    max-width: 282px;
+    position: relative;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  }
+
+  .country__flag {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    min-height: 282px;
+    background: gainsboro;
+    object-fit: contain;
+    object-position: 50% 50%;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .country__name {
+    word-break: break-word;
+    margin: 0;
+    padding: 20px 10px 0;
+    text-align: center;
+    /*border-bottom: 1px solid black;*/
+  }
+
+  .country__emblemimg {
+    padding: 15px 0 0;
+    margin: 0 auto;
+    display: block;
+    max-height: 141px;
+    object-fit: contain;
+    object-position: 50% 50%;
+  }
+
+  .country__statistics {
+    margin: 0;
+    padding: 15px 0 20px;
+    display: flex;
+    justify-content: center;
+
+  }
+
+</style>
+
+<body class="page">
+<header class="header">
+  <h1>СТРАНЫ МИРА</h1>
+</header>
+<section class="countries">
+  <ul class="countries__grid">
+  </ul>
+</section>
+
+<script>
+  const countriesURL = 'https://api.sampleapis.com/countries/countries'; // отсюда возьмем список стран мира с картинками и статистикой
+  const countriesGrid = document.querySelector('.countries__grid')
+  fetch(countriesURL) // получаем от API список стран мира
+    .then(resp => resp.json()) // преобразуем ответ в массив
+    .then(data => data.sort((countryA, countryB) => countryA.name < countryB.name ? -1 : 1) // сортируем массив по названию стран
+      .forEach(country => {   // для каждого элемента массива с объектами country генерим HTML разметку карточки с данными страны....
+        if (!country.media.flag) {  // кроме тех элементов, где URL изображения флага отстуствует
+          return
+        }
+        //  checkIfImageExists(country.media.flag, (exists) => {
+        //    if (exists) {
+        const countryHTML = `
+               <li class="country">
+                 <div>
+                  <img src="${country.media.flag}" alt="флаг ${country.name}" class="country__flag">
+                  <h2 class="country__name">${country.name}</h2>
+                  <img src="${country.media.emblem}" alt="герб ${country.name}" class="country__emblemimg">
+                  <h3 style="margin: 0; padding: 15px 0 0; text-align: center">Statistics</h3>
+                  <div class="country__statistics">
+                    <ul style="list-style: none; font-weight: normal; padding: 0 0 0 30px; line-height: 20px; min-width: fit-content">
+                      <li>Abbreviation</li>
+                      <li>Capital</li>
+                      <li>Currency</li>
+                      <li>Phone prefix</li>
+                      <li>Population</li>
+                    </ul>
+                    <ul style="padding: 0 0 0 20px; list-style: none; line-height: 20px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap">
+                      <li>${typeof country.abbreviation !== 'undefined' ? country.abbreviation : ''}</li>
+                      <li>${typeof country.capital !== 'undefined' ? country.capital : ''}</li>
+                      <li>${typeof country.currency !== 'undefined' ? country.currency : ''}</li>
+                      <li>${typeof country.phone !== 'undefined' ? country.phone.includes('+')  ? country.phone : '+'+country.phone : ''}</li>
+                      <li>${typeof country.population !== 'undefined' ? country.population.toLocaleString() : ''}</li>
+                    </ul>
+                  </div>
+                 </div>
+               </li>
+               `;
+        countriesGrid.insertAdjacentHTML('beforeend', countryHTML); // ... и вставляем карточку в список
+        //    }
+        //   })
+      }))
+
+
+  /*
+    function checkIfImageExists(url, callback) {
+      const img = new Image();
+      img.src = url;
+      if (img.complete) {
+        callback(true);
+      } else {
+        img.onload = () => {
+          callback(true);
+        };
+        img.onerror = () => {
+          callback(false);
+        };
+      }
+    }
+  */
+
+</script>
+
+</body>
+</html>
