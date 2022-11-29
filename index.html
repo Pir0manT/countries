@@ -109,19 +109,18 @@
 <script>
   const countriesURL = 'https://api.sampleapis.com/countries/countries'; // отсюда возьмем список стран мира с картинками и статистикой
   const countriesGrid = document.querySelector('.countries__grid')
+  let countryHTML =''
   fetch(countriesURL) // получаем от API список стран мира
     .then(resp => resp.json()) // преобразуем ответ в массив
-    .then(data => data.sort((countryA, countryB) => countryA.name < countryB.name ? -1 : 1) // сортируем массив по названию стран
-      .forEach(country => {   // для каждого элемента массива с объектами country генерим HTML разметку карточки с данными страны....
-        if (!country.media.flag) {  // кроме тех элементов, где URL изображения флага отстуствует
-          return
-        }
-        //  checkIfImageExists(country.media.flag, (exists) => {
-        //    if (exists) {
-        const countryHTML = `
+    .then(data => {
+      data
+        .filter(country => country.media.flag) // сразу исключим из массива те элементы, где URL изображения флага отстуствует
+        .sort((countryA, countryB) => countryA.name < countryB.name ? -1 : 1) // сортируем массив по названию стран
+        .forEach(country => {   // для каждого элемента массива с объектами country генерим HTML разметку карточки с данными страны....
+           countryHTML += `
                <li class="country">
                  <div>
-                  <img src="${country.media.flag}" alt="флаг ${country.name}" class="country__flag">
+                  <img src="${country.media.flag}" alt="флаг ${country.name}" class="country__flag" onerror="deleteCountry(this)">
                   <h2 class="country__name">${country.name}</h2>
                   <img src="${country.media.emblem}" alt="герб ${country.name}" class="country__emblemimg">
                   <h3 style="margin: 0; padding: 15px 0 0; text-align: center">Statistics</h3>
@@ -137,35 +136,23 @@
                       <li>${typeof country.abbreviation !== 'undefined' ? country.abbreviation : ''}</li>
                       <li>${typeof country.capital !== 'undefined' ? country.capital : ''}</li>
                       <li>${typeof country.currency !== 'undefined' ? country.currency : ''}</li>
-                      <li>${typeof country.phone !== 'undefined' ? country.phone.includes('+')  ? country.phone : '+'+country.phone : ''}</li>
+                      <li>${typeof country.phone !== 'undefined' ? country.phone.includes('+') ? country.phone : '+' + country.phone : ''}</li>
                       <li>${typeof country.population !== 'undefined' ? country.population.toLocaleString() : ''}</li>
                     </ul>
                   </div>
                  </div>
                </li>
                `;
-        countriesGrid.insertAdjacentHTML('beforeend', countryHTML); // ... и вставляем карточку в список
-        //    }
-        //   })
-      }))
 
+        })
+      countriesGrid.insertAdjacentHTML('beforeend', countryHTML); // ... и вставляем карточки в список
+    })
 
-  /*
-    function checkIfImageExists(url, callback) {
-      const img = new Image();
-      img.src = url;
-      if (img.complete) {
-        callback(true);
-      } else {
-        img.onload = () => {
-          callback(true);
-        };
-        img.onerror = () => {
-          callback(false);
-        };
-      }
-    }
-  */
+  function deleteCountry(self) {
+    console.log('removed >> ', self.alt)
+    self.closest('.country').remove()
+  }
+
 
 </script>
 
