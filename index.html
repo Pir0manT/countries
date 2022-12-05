@@ -116,7 +116,7 @@
       data
         .filter(country => country.media.flag) // сразу исключим из массива те элементы, где URL изображения флага отстуствует
         .sort((countryA, countryB) => countryA.name < countryB.name ? -1 : 1) // сортируем массив по названию стран
-        .forEach(country => {   // для каждого элемента массива с объектами country генерим HTML разметку карточки с данными страны....
+        .forEach(country => {   // для каждого элемента массива с объектами country генерим HTML разметку карточки с данными страны.....
            countryHTML += `
                <li class="country">
                  <div>
